@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }}{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">{{ 'S-%04d' % student.student_id }}</div>
+        <h1>{{ student.name }}</h1>
+    </div>
+    <div class="head-actions">
+        <a href="{{ url_for('edit_student', student_id=student.student_id) }}" class="btn-ghost">Edit</a>
+        <form method="post" action="{{ url_for('delete_student', student_id=student.student_id) }}"
+              onsubmit="return confirm('Delete {{ student.name }}? This cannot be undone.');">
+            <button type="submit" class="btn-danger">Delete</button>
+        </form>
+    </div>
+</header>
+
+<div class="detail-grid">
+    <div class="detail-item">
+        <span class="detail-label">Email</span>
+        <span class="detail-value">{{ student.email or '—' }}</span>
+    </div>
+    <div class="detail-item">
+        <span class="detail-label">Phone</span>
+        <span class="detail-value">{{ student.phone or '—' }}</span>
+    </div>
+    <div class="detail-item">
+        <span class="detail-label">Date of birth</span>
+        <span class="detail-value">{{ student.dob or '—' }}</span>
+    </div>
+    <div class="detail-item">
+        <span class="detail-label">Gender</span>
+        <span class="detail-value">{{ student.gender or '—' }}</span>
+    </div>
+    <div class="detail-item">
+        <span class="detail-label">Department</span>
+        <span class="detail-value">{{ student.dept_name or 'Unassigned' }}</span>
+    </div>
+</div>
+
+<div class="section-head">
+    <h2>Enrollments</h2>
+    <a href="{{ url_for('enroll', student_id=student.student_id) }}" class="btn-primary btn-small">+ Enroll in course</a>
+</div>
+
+{% if enrollments %}
+<div class="table-wrap">
+    <table class="record-table">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Grade</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in enrollments %}
+            <tr>
+                <td>{{ e.course_name }}</td>
+                <td>{{ e.semester or '—' }}</td>
+                <td>
+                    <form method="post" action="{{ url_for('update_grade', enrollment_id=e.enrollment_id) }}" class="inline-form">
+                        <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                        <input type="text" name="grade" value="{{ e.grade or '' }}" class="grade-input" maxlength="2">
+                        <button type="submit" class="btn-ghost btn-tiny">Save</button>
+                    </form>
+                </td>
+                <td class="actions">
+                    <form method="post" action="{{ url_for('delete_enrollment', enrollment_id=e.enrollment_id) }}"
+                          onsubmit="return confirm('Remove this enrollment?');">
+                        <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                        <button type="submit" class="link-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state small">
+    <p>Not enrolled in any courses yet.</p>
+</div>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back-link">← Back to all students</a>
+
+{% endblock %}

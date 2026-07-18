@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Enroll {{ student.name }}{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">S-{{ '%04d' % student.student_id }} · {{ student.name }}</div>
+        <h1>Enroll in a course</h1>
+    </div>
+</header>
+
+<form class="record-form" method="post">
+    <div class="field">
+        <label for="course_id">Course</label>
+        <select id="course_id" name="course_id" required>
+            <option value="" disabled selected>Select a course</option>
+            {% for c in courses %}
+            <option value="{{ c.course_id }}">{{ c.course_name }} ({{ c.credits }} credits)</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="field">
+        <label for="semester">Semester</label>
+        <input type="text" id="semester" name="semester" placeholder="e.g. Fall 2026" required>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">Enroll</button>
+        <a href="{{ url_for('view_student', student_id=student.student_id) }}" class="btn-ghost">Cancel</a>
+    </div>
+</form>
+
+{% endblock %}

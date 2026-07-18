@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">Enrolled Records</div>
+        <h1>Students</h1>
+    </div>
+    <form class="search-form" method="get" action="{{ url_for('index') }}">
+        <input type="text" name="q" placeholder="Search by name..." value="{{ search }}">
+        {% if search %}<a href="{{ url_for('index') }}" class="clear-link">Clear</a>{% endif %}
+    </form>
+</header>
+
+{% if students %}
+<div class="table-wrap">
+    <table class="record-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Department</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td><span class="record-tag">S-{{ '%04d' % s.student_id }}</span></td>
+                <td><a href="{{ url_for('view_student', student_id=s.student_id) }}" class="row-link">{{ s.name }}</a></td>
+                <td>{{ s.gender or '—' }}</td>
+                <td>{{ s.email or '—' }}</td>
+                <td>{{ s.phone or '—' }}</td>
+                <td>
+                    {% if s.dept_name %}
+                        <span class="chip">{{ s.dept_name }}</span>
+                    {% else %}
+                        <span class="chip chip-muted">Unassigned</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('view_student', student_id=s.student_id) }}">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>{% if search %}No students match "{{ search }}".{% else %}No students in the registry yet.{% endif %}</p>
+    <a href="{{ url_for('add_student') }}" class="btn-primary">Add the first student</a>
+</div>
+{% endif %}
+
+{% endblock %}

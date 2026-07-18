@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">Overview</div>
+        <h1>Dashboard</h1>
+    </div>
+</header>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Students</span>
+        <span class="stat-value">{{ stats.total_students }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Courses Offered</span>
+        <span class="stat-value">{{ stats.total_courses }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Active Enrollments</span>
+        <span class="stat-value">{{ stats.total_enrollments }}</span>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="chart-card">
+        <h2>Students by Department</h2>
+        <canvas id="deptChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+        <h2>Students by Gender</h2>
+        <canvas id="genderChart" height="220"></canvas>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+    const navy = "#16233F";
+    const amber = "#C08A3E";
+    const muted = "#7C8494";
+    const grid = "#E3DFD4";
+
+    const deptLabels = {{ stats.by_department | map(attribute='dept_name') | list | tojson }};
+    const deptValues = {{ stats.by_department | map(attribute='total') | list | tojson }};
+
+    new Chart(document.getElementById('deptChart'), {
+        type: 'bar',
+        data: {
+            labels: deptLabels,
+            datasets: [{
+                data: deptValues,
+                backgroundColor: navy,
+                borderRadius: 4,
+                maxBarThickness: 40
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: muted, font: { family: 'Inter' } } },
+                y: { beginAtZero: true, ticks: { precision: 0, color: muted, font: { family: 'Inter' } }, grid: { color: grid } }
+            }
+        }
+    });
+
+    const genderLabels = {{ stats.by_gender | map(attribute='gender') | list | tojson }};
+    const genderValues = {{ stats.by_gender | map(attribute='total') | list | tojson }};
+
+    new Chart(document.getElementById('genderChart'), {
+        type: 'doughnut',
+        data: {
+            labels: genderLabels,
+            datasets: [{
+                data: genderValues,
+                backgroundColor: [navy, amber, muted],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom', labels: { color: navy, font: { family: 'Inter', size: 12 } } }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

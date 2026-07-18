@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Records{% endblock %} — Registry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-mark">§</span>
+                <div class="brand-text">
+                    <div class="brand-title">Registry</div>
+                    <div class="brand-sub">Student Records</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                    <span class="nav-index">01</span> Dashboard
+                </a>
+                <a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">
+                    <span class="nav-index">02</span> Students
+                </a>
+                <a href="{{ url_for('courses') }}" class="nav-link {{ 'active' if request.endpoint == 'courses' }}">
+                    <span class="nav-index">03</span> Courses
+                </a>
+                <a href="{{ url_for('attendance_home') }}" class="nav-link {{ 'active' if request.endpoint in ['attendance_home'] }}">
+                    <span class="nav-index">04</span> Attendance
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{{ url_for('add_student') }}" class="btn-add-sidebar">+ New Student</a>
+                <a href="{{ url_for('logout') }}" class="logout-link">Log out{% if session.username %} ({{ session.username }}){% endif %}</a>
+            </div>
+        </aside>
+
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

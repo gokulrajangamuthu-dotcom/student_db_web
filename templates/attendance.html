@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">Roll Call</div>
+        <h1>Take Attendance</h1>
+    </div>
+</header>
+
+<form class="record-form attendance-picker" method="get">
+    <div class="field-row">
+        <div class="field">
+            <label for="course_id">Course</label>
+            <select id="course_id" name="course_id" required>
+                <option value="" disabled {% if not course_id %}selected{% endif %}>Select a course</option>
+                {% for c in courses %}
+                <option value="{{ c.course_id }}" {% if course_id and course_id|string == c.course_id|string %}selected{% endif %}>{{ c.course_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" value="{{ date or '' }}" required>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">Load roster</button>
+    </div>
+</form>
+
+{% if roster is not none %}
+    {% if roster %}
+    <form method="post" action="{{ url_for('save_attendance_route') }}">
+        <input type="hidden" name="course_id" value="{{ course_id }}">
+        <input type="hidden" name="date" value="{{ date }}">
+
+        <div class="table-wrap roster-wrap">
+            <table class="record-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in roster %}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="student_id" value="{{ s.student_id }}">
+                            {{ s.name }}
+                        </td>
+                        <td>
+                            <select name="status_{{ s.student_id }}" class="status-select">
+                                <option value="Present" {% if existing.get(s.student_id|string, 'Present') == 'Present' %}selected{% endif %}>Present</option>
+                                <option value="Absent" {% if existing.get(s.student_id|string) == 'Absent' %}selected{% endif %}>Absent</option>
+                                <option value="Late" {% if existing.get(s.student_id|string) == 'Late' %}selected{% endif %}>Late</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save attendance</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="empty-state">
+        <p>No students are enrolled in this course yet.</p>
+    </div>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

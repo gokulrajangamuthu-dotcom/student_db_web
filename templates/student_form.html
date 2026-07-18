@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Student' if student else 'Add Student' }}{% endblock %}
+{% block content %}
+
+<header class="page-head">
+    <div>
+        <div class="eyebrow">{{ 'S-%04d' % student.student_id if student else 'New Entry' }}</div>
+        <h1>{{ 'Edit Student' if student else 'Add Student' }}</h1>
+    </div>
+</header>
+
+<form class="record-form" method="post">
+    <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" value="{{ student.name if student else '' }}" required placeholder="e.g. Gokulraj A">
+    </div>
+
+    <div class="field-row">
+        <div class="field">
+            <label for="dob">Date of birth</label>
+            <input type="date" id="dob" name="dob" value="{{ student.dob if student else '' }}">
+        </div>
+        <div class="field">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                <option value="">— Not specified —</option>
+                <option value="Male" {% if student and student.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if student and student.gender == 'Female' %}selected{% endif %}>Female</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field-row">
+        <div class="field">
+            <label for="dept_id">Department</label>
+            <select id="dept_id" name="dept_id">
+                <option value="">— Unassigned —</option>
+                {% for d in departments %}
+                <option value="{{ d.dept_id }}" {% if student and student.dept_id == d.dept_id %}selected{% endif %}>{{ d.dept_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="field-row">
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ student.email if student else '' }}" placeholder="student@example.com">
+        </div>
+        <div class="field">
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" value="{{ student.phone if student else '' }}" placeholder="10-digit number">
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">{{ 'Save changes' if student else 'Add student' }}</button>
+        <a href="{{ url_for('index') if not student else url_for('view_student', student_id=student.student_id) }}" class="btn-ghost">Cancel</a>
+    </div>
+</form>
+
+{% endblock %}
